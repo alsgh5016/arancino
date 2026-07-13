@@ -29,7 +29,7 @@
   <!-- IA-32 (Win32) only. The pintool targets 32-bit PE files exclusively. -->
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
-      <AdditionalOptions>/GR- /GS- /EHs- /EHa- /FP:strict /Oi- /FIinclude/msvc_compat.h /D_WINDOWS_H_PATH_="$(WIN_INCLUDE)" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/GR- /GS- /EHs- /EHa- /FP:strict /Oi- /FIinclude/msvc_compat.h /FI"$(ProjectDir)std_compat.h" /D_WINDOWS_H_PATH_="$(WIN_INCLUDE)" %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)Scylla\Scylla;$(PIN_ROOT)\source\include\pin;$(PIN_ROOT)\source\include\pin\gen;$(PIN_ROOT)\source\tools\InstLib;$(PIN_ROOT)\extras\xed-ia32\include\xed;$(PIN_ROOT)\extras\components\include;$(PIN_ROOT)\extras\cxx\include;$(PIN_ROOT)\extras;$(PIN_ROOT)\extras\crt\include;$(PIN_ROOT)\extras\crt;$(PIN_ROOT)\extras\crt\include\arch-x86;$(PIN_ROOT)\extras\crt\include\kernel\uapi;$(PIN_ROOT)\extras\crt\include\kernel\uapi\asm-x86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <!-- Exactly REM's define set (+ BIGARRAY_MULTIPLIER/WIN32 that PINdemonium
            relies on).  No %() so the stale Pin 2.14 defines in the .vcxproj are
