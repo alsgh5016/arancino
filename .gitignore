@@ -1,0 +1,6 @@
+# macOS
+.DS_Store
+
+# Stray upstream diStorm clone (embedded git repo, unused by the build;
+# the project compiles src/PINdemonium/diStorm/src/*.c instead).
+src/PINdemonium/diStorm/distorm/

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pin 3.31 (IA-32 / Windows / MSVC kit) wiring for the PINdemonium pintool.
+
+  Imported ONLY by MyPinTool.vcxproj, and imported LAST (right before the
+  Microsoft.Cpp.targets import) so that the values here OVERRIDE the stale
+  Pin 2.14 include/lib/define settings that still live inside the .vcxproj.
+
+  Runtime layout is the hardcoded C:\pin\ that the tool expects (unpack the
+  kit pin-external-3.31-98869-gfa6f126a8-msvc-windows.zip into C:\pin\).
+
+  ============================ VERIFY-ON-KIT =================================
+  Two things below MUST be confirmed against the actual 3.31 kit on Windows,
+  because Intel changed the Windows link layer between 2.14 and 3.x and the
+  exact PinCRT library names are not something to guess:
+
+    (1) The PinCRT include directories (marked  <!-- CRT --> ).
+    (2) The PinCRT link libraries (marked      <!-- PINCRT-LIBS --> ).
+
+  Authoritative way to get them (run once on the Windows box, then paste to me):
+      cd C:\pin\source\tools\SimpleExamples
+      make obj-ia32\inscount0.dll TARGET=ia32   (or nmake, per kit)
+  ...and capture the full cl.exe + link.exe command line (the /I include dirs
+  and the .lib list).  I will then finalize the two marked sections exactly.
+  ===========================================================================
+-->
+<Project>
+  <PropertyGroup Label="PinRoot">
+    <PIN_ROOT>C:\pin</PIN_ROOT>
+  </PropertyGroup>
+
+  <!-- IA-32 (Win32) only. The pintool targets 32-bit PE files exclusively. -->
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)Scylla\Scylla;$(PIN_ROOT)\source\include\pin;$(PIN_ROOT)\source\include\pin\gen;$(PIN_ROOT)\source\tools\Utils;$(PIN_ROOT)\source\tools\InstLib;$(PIN_ROOT)\extras\components\include;$(PIN_ROOT)\extras\xed-ia32\include\xed;$(PIN_ROOT)\extras\stlport\include;$(PIN_ROOT)\extras\libstdc++\include;$(PIN_ROOT)\extras\crt\include;$(PIN_ROOT)\extras\crt\include\arch-x86;$(PIN_ROOT)\extras\crt\include\kernel\uapi;$(PIN_ROOT)\extras\crt\include\kernel\uapi\asm-x86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- Pin 3.x adds __PIN__ and PIN_CRT vs the old 2.14 define set. -->
+      <PreprocessorDefinitions>TARGET_IA32;HOST_IA32;TARGET_WINDOWS;__PIN__=1;PIN_CRT=1;BIGARRAY_MULTIPLIER=1;_SECURE_SCL=0;_ITERATOR_DEBUG_LEVEL=0;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/EHs- /EHa- %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <!-- Pin core + XED (2.14 'libxed.lib' became 'xed.lib' in 3.x) + native
+           bits.  Native CRT (libcpmt.lib / libcmt.lib) is REMOVED — PinCRT
+           replaces it and native-CRT linking is unsupported in Pin 3.x. -->
+      <AdditionalDependencies>pin.lib;pinvm.lib;xed.lib;ntdll-32.lib;kernel32.lib;ScyllaDLLx86.lib;$(PinCrtLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(PIN_ROOT)\ia32\lib;$(PIN_ROOT)\ia32\lib-ext;$(PIN_ROOT)\extras\xed-ia32\lib;C:\pin\PINdemoniumDependencies\Scylla\ScyllaDllRelease;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/export:main /EXPORT:main %(AdditionalOptions)</AdditionalOptions>
+      <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
+      <BaseAddress>0x55000000</BaseAddress>
+      <SubSystem>NotSet</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <OptimizeReferences>false</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- PINCRT-LIBS: fill in the exact PinCRT .lib list captured from the kit.
+       Placeholder is empty so the build still links against pin/pinvm/xed and
+       will simply report the missing CRT symbols, telling us precisely which
+       PinCRT libs to add here. -->
+  <PropertyGroup>
+    <PinCrtLibs>crtbeginS.obj;stlport-dynamic.lib;libstlport-static.lib;libc-dynamic.lib;libm-dynamic.lib;libunwind-dynamic.lib;crtendS.obj</PinCrtLibs>
+  </PropertyGroup>
+</Project>
