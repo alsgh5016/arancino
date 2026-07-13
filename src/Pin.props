@@ -19,10 +19,11 @@
   <PropertyGroup Label="PinRoot">
     <PIN_ROOT>C:\pin</PIN_ROOT>
     <!-- Directory that holds the real SDK Windows.h (the ...\um folder).
-         Auto-derived from the installed Windows 10/11 SDK. Override in the
-         environment or here if detection fails, e.g.
-         C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um -->
-    <WIN_INCLUDE Condition="'$(WIN_INCLUDE)'==''">$(WindowsSdkDir)Include\$(WindowsSDKVersion)um</WIN_INCLUDE>
+         Hardcoded to the installed Windows 10 SDK version, like REM does
+         ($(WindowsSDKVersion) evaluates empty this early, dropping the version
+         and breaking the path). If your SDK version differs, change it here or
+         set WIN_INCLUDE in the environment / project properties. -->
+    <WIN_INCLUDE Condition="'$(WIN_INCLUDE)'==''">C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um</WIN_INCLUDE>
   </PropertyGroup>
 
   <!-- IA-32 (Win32) only. The pintool targets 32-bit PE files exclusively. -->
