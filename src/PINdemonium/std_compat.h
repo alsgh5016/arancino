@@ -19,7 +19,15 @@
 #include <set>
 #include <sstream>
 #include <ostream>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <utility>
+#include <cstdint>
+
+// MSVC CRT exposes _ULonglong (used in casts before std::to_string); PinCRT does
+// not.  It is just unsigned long long.
+typedef unsigned long long _ULonglong;
 
 // PINdemonium used MSVC's <direct.h> _mkdir(), but <direct.h> is not part of
 // PinCRT and would drag in MSVC's UCRT corecrt.h at global scope (clashing
@@ -30,14 +38,11 @@
 #define _mkdir(path) mkdir((path), 0777)
 #endif
 
-using std::string;
-using std::wstring;
-using std::vector;
-using std::map;
-using std::list;
-using std::set;
-using std::pair;
-using std::ostream;
-using std::stringstream;
+// PINdemonium was written against VS2010's non-conformant STL and uses std
+// names (string, vector, map, ios, ofstream, ...) unqualified throughout, with
+// no `using namespace std`.  Expose the whole namespace to match that.  It does
+// not clash with the Windows API, which the code reaches via the explicit W::
+// namespace, nor with Pin's ALL-CAPS global types.
+using namespace std;
 
 #endif // PINDEMONIUM_STD_COMPAT_H
