@@ -147,14 +147,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="tinystr.cpp" />
-    <ClCompile Include="tinyxml.cpp" />
-    <ClCompile Include="tinyxmlerror.cpp" />
-    <ClCompile Include="tinyxmlparser.cpp" />
+    <ClCompile Include="..\..\PINdemonium\tinyxml\tinystr.cpp" />
+    <ClCompile Include="..\..\PINdemonium\tinyxml\tinyxml.cpp" />
+    <ClCompile Include="..\..\PINdemonium\tinyxml\tinyxmlerror.cpp" />
+    <ClCompile Include="..\..\PINdemonium\tinyxml\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="tinystr.h" />
-    <ClInclude Include="tinyxml.h" />
+    <ClInclude Include="..\..\PINdemonium\tinyxml\tinystr.h" />
+    <ClInclude Include="..\..\PINdemonium\tinyxml\tinyxml.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
