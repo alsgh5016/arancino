@@ -24,7 +24,11 @@
   <!-- IA-32 (Win32) only. The pintool targets 32-bit PE files exclusively. -->
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Scylla\Scylla;$(PIN_ROOT)\source\include\pin;$(PIN_ROOT)\source\include\pin\gen;$(PIN_ROOT)\source\tools\Utils;$(PIN_ROOT)\source\tools\InstLib;$(PIN_ROOT)\extras\components\include;$(PIN_ROOT)\extras\xed-ia32\include\xed;$(PIN_ROOT)\extras\CXX\include;$(PIN_ROOT)\extras\crt\include;$(PIN_ROOT)\extras\crt\include\arch-x86;$(PIN_ROOT)\extras\crt\include\kernel\uapi;$(PIN_ROOT)\extras\crt\include\kernel\uapi\asm-x86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- MSVC kit model (mirrors the original Pin 2.14 MSVC project): use
+           MSVC's own STL/CRT headers + link pincrt.lib/c++.lib.  Do NOT add
+           Pin's Linux/clang libc headers (extras\crt\include) — they use the
+           GCC-only #include_next directive that cl.exe rejects (C1021). -->
+      <AdditionalIncludeDirectories>$(SolutionDir)Scylla\Scylla;$(PIN_ROOT)\source\include\pin;$(PIN_ROOT)\source\include\pin\gen;$(PIN_ROOT)\source\tools\Utils;$(PIN_ROOT)\source\tools\InstLib;$(PIN_ROOT)\extras\components\include;$(PIN_ROOT)\extras\xed-ia32\include;$(PIN_ROOT)\extras\xed-ia32\include\xed;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <!-- Pin 3.x adds __PIN__ and PIN_CRT vs the old 2.14 define set. -->
       <PreprocessorDefinitions>TARGET_IA32;HOST_IA32;TARGET_WINDOWS;__PIN__=1;PIN_CRT=1;BIGARRAY_MULTIPLIER=1;_SECURE_SCL=0;_ITERATOR_DEBUG_LEVEL=0;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <!-- MSVC reports __cplusplus==199711L unless /Zc:__cplusplus is passed;
