@@ -11,7 +11,7 @@
 #include <fstream>
 #include "json.h"
 namespace W {
-	#include "PinWindows.h"
+	#include <windows.h>
 }
 
 //if it is uncommented the result will be saved on file otherwise they'll be printed to stdout

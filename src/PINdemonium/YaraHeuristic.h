@@ -3,7 +3,7 @@
 #include "ReportYaraRules.h"
 #include "Helper.h"
 namespace W{
-#include "PinWindows.h"
+#include "windows.h"
 }
 
 //size of the buffer used for communitating with the yara process

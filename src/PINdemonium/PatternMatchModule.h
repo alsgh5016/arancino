@@ -7,7 +7,7 @@
 #include <regex>
 
 namespace W{
-	#include "PinWindows.h"
+	#include <Windows.h>
 }
 
 class PatternMatchModule

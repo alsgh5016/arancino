@@ -1,5 +1,5 @@
 #pragma once
-#include "PinWindows.h"
+#include <windows.h>
 #include <sstream>
 
 typedef void *HANDLE;
