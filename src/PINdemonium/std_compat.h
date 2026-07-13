@@ -21,6 +21,15 @@
 #include <ostream>
 #include <utility>
 
+// PINdemonium used MSVC's <direct.h> _mkdir(), but <direct.h> is not part of
+// PinCRT and would drag in MSVC's UCRT corecrt.h at global scope (clashing
+// wchar_t/mbstate_t/time_t typedefs).  Map _mkdir onto PinCRT's POSIX mkdir
+// instead (the mode is ignored on Windows; directory creation is unchanged).
+#include <sys/stat.h>
+#ifndef _mkdir
+#define _mkdir(path) mkdir((path), 0777)
+#endif
+
 using std::string;
 using std::wstring;
 using std::vector;

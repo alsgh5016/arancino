@@ -34,14 +34,10 @@
       <!-- Exactly REM's define set (+ BIGARRAY_MULTIPLIER/WIN32 that PINdemonium
            relies on).  No %() so the stale Pin 2.14 defines in the .vcxproj are
            fully discarded and the pintool matches REM's proven configuration. -->
-      <!-- PINdemonium pulls MSVC-only headers (<direct.h>, <stdio.h>, ...) at
-           global scope, which drag in MSVC's UCRT corecrt.h.  Its wchar_t /
-           mbstate_t / time_t typedefs then clash with PinCRT's (e.g. PinCRT
-           time_t=long vs MSVC long long).  Pre-setting MSVC's guards makes
-           corecrt.h skip those three typedefs and defer to PinCRT's, which are
-           what the tool actually links against.  PinCRT's time_t is unguarded
-           so it is still defined; wchar_t stays the C++ builtin. -->
-      <PreprocessorDefinitions>TARGET_IA32;HOST_IA32;TARGET_WINDOWS;PIN_CRT=1;__i386__;_LIBCPP_DISABLE_AVAILABILITY;_LIBCPP_NO_VCRUNTIME;__BIONIC__;BIGARRAY_MULTIPLIER=1;WIN32;_WCHAR_T_DEFINED;_TIME_T_DEFINED;_MBSTATET_DEFINED</PreprocessorDefinitions>
+      <!-- Exactly REM's define set (+ BIGARRAY_MULTIPLIER/WIN32 that PINdemonium
+           relies on).  The corecrt.h typedef clash is fixed at the source by
+           not pulling MSVC's <direct.h> (see std_compat.h), so no guard hacks. -->
+      <PreprocessorDefinitions>TARGET_IA32;HOST_IA32;TARGET_WINDOWS;PIN_CRT=1;__i386__;_LIBCPP_DISABLE_AVAILABILITY;_LIBCPP_NO_VCRUNTIME;__BIONIC__;BIGARRAY_MULTIPLIER=1;WIN32</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <ExceptionHandling></ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
