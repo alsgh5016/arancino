@@ -2615,11 +2615,16 @@ LogicError::LogicError(JSONCPP_STRING const& msg)
 {}
 JSONCPP_NORETURN void throwRuntimeError(JSONCPP_STRING const& msg)
 {
-  throw RuntimeError(msg);
+  // PinCRT builds libc++ with _LIBCPP_NO_EXCEPTIONS and the pintool is compiled
+  // /EHs- /EHa-, so C++ exceptions are unavailable. These paths only fire on
+  // malformed JSON, which never happens for PINdemonium's own config/report.
+  (void)msg;
+  abort();
 }
 JSONCPP_NORETURN void throwLogicError(JSONCPP_STRING const& msg)
 {
-  throw LogicError(msg);
+  (void)msg;
+  abort();
 }
 
 // //////////////////////////////////////////////////////////////////
