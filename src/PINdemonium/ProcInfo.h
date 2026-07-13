@@ -18,7 +18,6 @@ namespace W{
 	#include "winnt.h"
 	#include  "Intsafe.h"
 }
-using namespace W;
 
 #define MAX_STACK_SIZE 0x100000    //Used to define the memory range of the stack
 #define TEB_SIZE 0xfe0 	

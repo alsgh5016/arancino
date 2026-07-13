@@ -22,10 +22,10 @@ GdbDebugger::GdbDebugger(void)
    saAttr.bInheritHandle = TRUE; 
    saAttr.lpSecurityDescriptor = NULL; 
    //Create a pipe for the child process's STDIN. 
-   if (! CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) 
+   if (! W::CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) 
       ErrorExit(TEXT("Stdin CreatePipe")); 	
    // Ensure the write handle to the pipe for STDIN is not inherited. 
-   if ( ! SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) )
+   if ( ! W::SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) )
       ErrorExit(TEXT("Stdin SetHandleInformation")); 
    // Create the child process.   
    CreateChildProcess();
@@ -53,19 +53,19 @@ void GdbDebugger::CreateChildProcess()
 // Create a child process that uses the previously created pipes for STDIN and STDOUT.
 { 
 	TCHAR szCmdline[]=TEXT(GDB_PATH);
-	PROCESS_INFORMATION piProcInfo ={0}; 
-	STARTUPINFO siStartInfo;
+	W::PROCESS_INFORMATION piProcInfo ={0}; 
+	W::STARTUPINFO siStartInfo;
 	BOOL bSuccess = FALSE; 
-	// Set up members of the STARTUPINFO structure. 
+	// Set up members of the W::STARTUPINFO structure. 
 	// This structure specifies the STDIN and STDOUT handles for redirection.
-	ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-	siStartInfo.cb = sizeof(STARTUPINFO); 
+	ZeroMemory( &siStartInfo, sizeof(W::STARTUPINFO) );
+	siStartInfo.cb = sizeof(W::STARTUPINFO); 
 	siStartInfo.hStdError =  GetStdHandle(STD_ERROR_HANDLE);
 	siStartInfo.hStdOutput =  GetStdHandle(STD_OUTPUT_HANDLE);
 	siStartInfo.hStdInput = g_hChildStd_IN_Rd;
 	siStartInfo.dwFlags |= STARTF_USESTDHANDLES; 
 	// Create the child process.    
-	bSuccess = CreateProcess(NULL, 
+	bSuccess = W::CreateProcess(NULL, 
 		szCmdline,     // command line 
 		NULL,          // process security attributes 
 		NULL,          // primary thread security attributes 
@@ -73,8 +73,8 @@ void GdbDebugger::CreateChildProcess()
 		CREATE_NEW_CONSOLE,             // creation flags 
 		NULL,          // use parent's environment 
 		NULL,          // use parent's current directory 
-		&siStartInfo,  // STARTUPINFO pointer 
-		&piProcInfo);  // receives PROCESS_INFORMATION 
+		&siStartInfo,  // W::STARTUPINFO pointer 
+		&piProcInfo);  // receives W::PROCESS_INFORMATION 
    
 	// If an error occurs, exit the application. 
 	if ( ! bSuccess ) 
@@ -84,8 +84,8 @@ void GdbDebugger::CreateChildProcess()
 		// Close handles to the child process and its primary thread.
 		// Some applications might keep these handles to monitor the status
 		// of the child process, for example. 
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
+		W::CloseHandle(piProcInfo.hProcess);
+		W::CloseHandle(piProcInfo.hThread);
 	}
 }
 
@@ -94,7 +94,7 @@ void GdbDebugger::CreateChildProcess()
 void GdbDebugger::WriteToPipe(char* cmd) { 
    DWORD dwRead = strlen(cmd), dwWritten; 
    BOOL bSuccess = FALSE;       
-   bSuccess = WriteFile(g_hChildStd_IN_Wr, cmd, dwRead, &dwWritten, NULL);
+   bSuccess = W::WriteFile(g_hChildStd_IN_Wr, cmd, dwRead, &dwWritten, NULL);
 } 
 
 
@@ -105,8 +105,8 @@ void GdbDebugger::ReadFromPipe(void){
    DWORD dwRead, dwWritten; 
    CHAR chBuf[BUFSIZE]; 
    BOOL bSuccess = FALSE;
-   HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-   ReadFile( g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL); 
+   W::HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+   W::ReadFile( g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL); 
 } 
 
 

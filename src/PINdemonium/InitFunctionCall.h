@@ -6,7 +6,6 @@ namespace W{
 	#include <tlhelp32.h>
 	#include <Psapi.h>	
 }
-using namespace W;
 
 
 

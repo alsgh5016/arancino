@@ -5,7 +5,6 @@
 namespace W{
 #include "windows.h"
 }
-using namespace W;
 
 //size of the buffer used for communitating with the yara process
 #define PIPE_BUFSIZE 4096

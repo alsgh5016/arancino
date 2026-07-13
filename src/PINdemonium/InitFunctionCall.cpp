@@ -23,9 +23,9 @@ InitFunctionCall::InitFunctionCall(void)
 		INFO("Loading scylla\n ");
 		if (hScylla)
 		{
-			ScyllaIatSearch = (def_ScyllaIatSearch)GetProcAddress(hScylla, "ScyllaIatSearch");
-			ScyllaIatFixAutoA = (def_ScyllaIatFixAutoA)GetProcAddress(hScylla, "ScyllaIatFixAutoA");
-			ScyllaDumpProcessA = (def_ScyllaDumpProcessA)GetProcAddress(hScylla, "ScyllaDumpProcessA");
+			ScyllaIatSearch = (def_ScyllaIatSearch)W::GetProcAddress(hScylla, "ScyllaIatSearch");
+			ScyllaIatFixAutoA = (def_ScyllaIatFixAutoA)W::GetProcAddress(hScylla, "ScyllaIatFixAutoA");
+			ScyllaDumpProcessA = (def_ScyllaDumpProcessA)W::GetProcAddress(hScylla, "ScyllaDumpProcessA");
 		}
 
 
@@ -63,9 +63,9 @@ ADDRINT InitFunctionCall::GetExeModuleBase(UINT32 dwProcessId)
 	W::MODULEENTRY32 lpModuleEntry = { 0 };
 	W::HANDLE hSnapShot = W::CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
 	lpModuleEntry.dwSize = sizeof(lpModuleEntry);
-	Module32First(hSnapShot, &lpModuleEntry);
+	W::Module32First(hSnapShot, &lpModuleEntry);
 
-	CloseHandle(hSnapShot);
+	W::CloseHandle(hSnapShot);
 
 	return (ADDRINT)lpModuleEntry.modBaseAddr;
 }

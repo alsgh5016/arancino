@@ -9,7 +9,6 @@
 namespace W{
 	#include <Windows.h>
 }
-using namespace W;
 
 class PatternMatchModule
 {

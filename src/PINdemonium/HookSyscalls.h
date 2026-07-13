@@ -10,7 +10,6 @@ namespace W{
 	#include "windows.h"
 	#include "Winternl.h"
 }
-using namespace W;
 
 #include "ProcInfo.h"
 

@@ -6,7 +6,6 @@
 namespace W{
 	#include <windows.h>
 }
-using namespace W;
 #include <string>
 #include "Debug.h"
 #include <sstream>
