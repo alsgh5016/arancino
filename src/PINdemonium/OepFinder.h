@@ -13,6 +13,7 @@
 namespace W {
 	#include <windows.h>
 }
+using namespace W;
 #include "GdbDebugger.h"
 #include "ScyllaWrapperInterface.h"
 #include "TimeTracker.h"

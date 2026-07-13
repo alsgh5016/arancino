@@ -4,7 +4,8 @@
 
 namespace W {
 #include <windows.h>
-};
+}
+using namespace W;;
 
 
 

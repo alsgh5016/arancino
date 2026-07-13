@@ -12,6 +12,7 @@
 namespace W {
 	#include <windows.h>
 }
+using namespace W;
 
 //if it is uncommented the result will be saved on file otherwise they'll be printed to stdout
 #define LOG_WRITE_TO_FILE 1

@@ -10,6 +10,7 @@
 namespace W {
 	#include <Windows.h>
 }
+using namespace W;
 
 class PINshield
 {
