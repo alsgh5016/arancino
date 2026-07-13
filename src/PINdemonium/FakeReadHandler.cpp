@@ -217,11 +217,11 @@ BOOL FakeReadHandler::CheckInCurrentDlls(UINT32 address_to_check){
     W::DWORD cbNeeded;
 	BOOL isDll = FALSE;
 	W::HANDLE process = W::GetCurrentProcess(); 
-	MODULEINFO mi;
+	W::MODULEINFO mi;
 	if( this->enumProcessModules(process, hMods, sizeof(hMods), &cbNeeded)){
         for (int  i = 0; i < (cbNeeded / sizeof(W::HMODULE)); i++ ){
             this->getModuleInformation(process,hMods[i], &mi,sizeof(mi));
-		    GetModuleFileNameA(hMods[i], pBuffer,sizeof(Buffer));
+		    W::GetModuleFileNameA(hMods[i], pBuffer,sizeof(Buffer));
 			UINT32 end_addr = (UINT32)mi.lpBaseOfDll + mi.SizeOfImage;
 			ProcInfo *p = ProcInfo::getInstance();
 			BOOL isMain = FALSE;

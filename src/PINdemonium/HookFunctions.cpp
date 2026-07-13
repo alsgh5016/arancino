@@ -27,7 +27,7 @@ HookFunctions::~HookFunctions(void)
 //----------------------------- HOOKED FUNCTIONS -----------------------------//
 
 
-// hook the VirtualAlloc() in order to retrieve the memory range allocated and build ours data structures
+// hook the W::VirtualAlloc() in order to retrieve the memory range allocated and build ours data structures
 // NOT USED ANYMORE, WE HOOKED THE NtAllocateVirtualMemory syscall in order to be more generic ( see HookSyscalls.cpp row 126 )
 VOID VirtualAllocHook(UINT32 virtual_alloc_size , UINT32 ret_heap_address ){  
 	ProcInfo *proc_info = ProcInfo::getInstance();

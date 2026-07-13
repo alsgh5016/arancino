@@ -1,8 +1,8 @@
 #pragma once
+namespace W {
 #include <windows.h>
+}
 #include <sstream>
-
-typedef void *W::HANDLE;
 
 class GdbDebugger
 

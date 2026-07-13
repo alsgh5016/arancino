@@ -40,7 +40,7 @@ UINT32 HeapModule::checkHeapWxorX(WriteInterval* item, ADDRINT curEip, int dumpA
 			MYINFO("[CRITICAL ERROR]Dump file not found\n");
 			return OEPFINDER_HEURISTIC_FAIL;
 		}
-		// and convert it into the WCHAR representation 
+		// and convert it into the W::WCHAR representation 
 		std::wstring widestr = std::wstring(dump_path.begin(), dump_path.end());
 		const wchar_t* widecstr = widestr.c_str();
 		// calculate where the program jump in the heap ( i.e. 0 perfectly at the begin of the heapzone ) 

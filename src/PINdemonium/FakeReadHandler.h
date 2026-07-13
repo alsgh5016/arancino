@@ -26,10 +26,10 @@ typedef struct _MODULEINFO {
     W::LPVOID lpBaseOfDll;
     W::DWORD  SizeOfImage;
     W::LPVOID EntryPoint;
-	} MODULEINFO, *LPMODULEINFO;
+	} W::MODULEINFO, *W::LPMODULEINFO;
 
 typedef W::DWORD (WINAPI *MyEnumProcessModules)(W::HANDLE hProcess, W::HMODULE *lphModule, W::DWORD cb, W::LPDWORD lpcbNeeded);
-typedef W::DWORD (WINAPI *MyGetModuleInformation)(W::HANDLE hProcess, W::HMODULE HModule, LPMODULEINFO module_info, W::DWORD  cb);
+typedef W::DWORD (WINAPI *MyGetModuleInformation)(W::HANDLE hProcess, W::HMODULE HModule, W::LPMODULEINFO module_info, W::DWORD  cb);
 
 /*function which return the ADDRINT containing the fake memory content for the curAddr address
 	curAddr: current address which is queried

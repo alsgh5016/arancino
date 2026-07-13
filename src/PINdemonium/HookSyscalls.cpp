@@ -170,7 +170,7 @@ void HookSyscalls::NtQueueApcThreadHook(syscall_t *sc , CONTEXT *ctx , SYSCALL_S
 
 // lower the results of the NtQueryPerformanceCounterHook
 void HookSyscalls::NtQueryPerformanceCounterHook(syscall_t *sc , CONTEXT *ctx, SYSCALL_STANDARD std){
-	//the first argument of the syscall is a pointer to the LARGE_INTEGER struct that will store the results ( hxxps://msdn.microsoft.com/en-us/library/bb432384(v=vs.85).aspx )
+	//the first argument of the syscall is a pointer to the W::LARGE_INTEGER struct that will store the results ( hxxps://msdn.microsoft.com/en-us/library/bb432384(v=vs.85).aspx )
 	W::PLARGE_INTEGER p_li = (W::PLARGE_INTEGER)sc->arg0; 
 	// cut the QuadPart, it is usually used to calculate the delta ( ex: ElapsedMicroseconds.QuadPart = EndingTime.QuadPart - StartingTime.QuadPart; )
 	p_li->QuadPart = p_li->QuadPart/Config::CC_DIVISOR;  

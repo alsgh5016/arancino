@@ -16,9 +16,9 @@ GdbDebugger* GdbDebugger::getInstance()
 
 GdbDebugger::GdbDebugger(void)
 {
-   SECURITY_ATTRIBUTES saAttr; 
+   W::SECURITY_ATTRIBUTES saAttr; 
    //Set the bInheritHandle flag so pipe handles are inherited. 
-   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
+   saAttr.nLength = sizeof(W::SECURITY_ATTRIBUTES); 
    saAttr.bInheritHandle = TRUE; 
    saAttr.lpSecurityDescriptor = NULL; 
    //Create a pipe for the child process's STDIN. 
@@ -60,8 +60,8 @@ void GdbDebugger::CreateChildProcess()
 	// This structure specifies the STDIN and STDOUT handles for redirection.
 	ZeroMemory( &siStartInfo, sizeof(W::STARTUPINFO) );
 	siStartInfo.cb = sizeof(W::STARTUPINFO); 
-	siStartInfo.hStdError =  GetStdHandle(STD_ERROR_HANDLE);
-	siStartInfo.hStdOutput =  GetStdHandle(STD_OUTPUT_HANDLE);
+	siStartInfo.hStdError =  W::GetStdHandle(STD_ERROR_HANDLE);
+	siStartInfo.hStdOutput =  W::GetStdHandle(STD_OUTPUT_HANDLE);
 	siStartInfo.hStdInput = g_hChildStd_IN_Rd;
 	siStartInfo.dwFlags |= STARTF_USESTDHANDLES; 
 	// Create the child process.    
@@ -92,7 +92,7 @@ void GdbDebugger::CreateChildProcess()
 // Read from a file and write its contents to the pipe for the child's STDIN.
 // Stop when there is no more data. 
 void GdbDebugger::WriteToPipe(char* cmd) { 
-   DWORD dwRead = strlen(cmd), dwWritten; 
+   W::DWORD dwRead = strlen(cmd), dwWritten; 
    BOOL bSuccess = FALSE;       
    bSuccess = W::WriteFile(g_hChildStd_IN_Wr, cmd, dwRead, &dwWritten, NULL);
 } 
@@ -102,10 +102,10 @@ void GdbDebugger::WriteToPipe(char* cmd) {
 // and write to the parent process's pipe for STDOUT. 
 // Stop when there is no more data. 
 void GdbDebugger::ReadFromPipe(void){ 
-   DWORD dwRead, dwWritten; 
+   W::DWORD dwRead, dwWritten; 
    CHAR chBuf[BUFSIZE]; 
    BOOL bSuccess = FALSE;
-   W::HANDLE hParentStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+   W::HANDLE hParentStdOut = W::GetStdHandle(STD_OUTPUT_HANDLE);
    W::ReadFile( g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL); 
 } 
 
