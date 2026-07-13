@@ -217,7 +217,7 @@ BOOL FakeReadHandler::CheckInCurrentDlls(UINT32 address_to_check){
     W::DWORD cbNeeded;
 	BOOL isDll = FALSE;
 	W::HANDLE process = W::GetCurrentProcess(); 
-	W::MODULEINFO mi;
+	MODULEINFO mi;
 	if( this->enumProcessModules(process, hMods, sizeof(hMods), &cbNeeded)){
         for (int  i = 0; i < (cbNeeded / sizeof(W::HMODULE)); i++ ){
             this->getModuleInformation(process,hMods[i], &mi,sizeof(mi));
