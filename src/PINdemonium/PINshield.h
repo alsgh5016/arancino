@@ -8,7 +8,7 @@
 #include "FakeWriteHandler.h"
 
 namespace W {
-	#include <Windows.h>
+	#include "PinWindows.h"
 }
 
 class PINshield

@@ -2,7 +2,7 @@
 #include "pin.H"
 #include "WxorXHandler.h"
 namespace W{
-	#include "windows.h"
+	#include "PinWindows.h"
 	#include <tlhelp32.h>
 	#include <Psapi.h>	
 }

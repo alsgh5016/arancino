@@ -18,12 +18,17 @@
 <Project>
   <PropertyGroup Label="PinRoot">
     <PIN_ROOT>C:\pin</PIN_ROOT>
+    <!-- Directory that holds the real SDK Windows.h (the ...\um folder).
+         Auto-derived from the installed Windows 10/11 SDK. Override in the
+         environment or here if detection fails, e.g.
+         C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um -->
+    <WIN_INCLUDE Condition="'$(WIN_INCLUDE)'==''">$(WindowsSdkDir)Include\$(WindowsSDKVersion)um</WIN_INCLUDE>
   </PropertyGroup>
 
   <!-- IA-32 (Win32) only. The pintool targets 32-bit PE files exclusively. -->
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
-      <AdditionalOptions>/GR- /GS- /EHs- /EHa- /FP:strict /Oi- /FIinclude/msvc_compat.h %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/GR- /GS- /EHs- /EHa- /FP:strict /Oi- /FIinclude/msvc_compat.h /D_WINDOWS_H_PATH_="$(WIN_INCLUDE)" %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)Scylla\Scylla;$(PIN_ROOT)\source\include\pin;$(PIN_ROOT)\source\include\pin\gen;$(PIN_ROOT)\source\tools\InstLib;$(PIN_ROOT)\extras\xed-ia32\include\xed;$(PIN_ROOT)\extras\components\include;$(PIN_ROOT)\extras\cxx\include;$(PIN_ROOT)\extras;$(PIN_ROOT)\extras\crt\include;$(PIN_ROOT)\extras\crt;$(PIN_ROOT)\extras\crt\include\arch-x86;$(PIN_ROOT)\extras\crt\include\kernel\uapi;$(PIN_ROOT)\extras\crt\include\kernel\uapi\asm-x86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>TARGET_IA32;HOST_IA32;TARGET_WINDOWS;PIN_CRT=1;__i386__;_LIBCPP_DISABLE_AVAILABILITY;_LIBCPP_NO_VCRUNTIME;__BIONIC__;BIGARRAY_MULTIPLIER=1;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling></ExceptionHandling>

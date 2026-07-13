@@ -7,7 +7,7 @@
 #include "OepFinder.h"
 
 namespace W{
-	#include "windows.h"
+	#include "PinWindows.h"
 }
 
 class HeapModule

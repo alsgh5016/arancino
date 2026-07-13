@@ -3,7 +3,7 @@
 #include "ProcInfo.h"
 #include <sstream>
 namespace W{
-	#include "windows.h"
+	#include "PinWindows.h"
 	#include <tlhelp32.h>
 	#include <Psapi.h>	
 }

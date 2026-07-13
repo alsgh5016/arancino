@@ -7,7 +7,7 @@
 #include "ProcessInjectionModule.h"
 
 namespace W{
-	#include "windows.h"
+	#include "PinWindows.h"
 	#include "Winternl.h"
 }
 

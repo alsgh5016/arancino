@@ -3,7 +3,7 @@
 #include "pin.H"
 
 namespace W {
-#include <windows.h>
+#include "PinWindows.h"
 };
 
 

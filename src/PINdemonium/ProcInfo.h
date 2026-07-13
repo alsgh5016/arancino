@@ -12,7 +12,7 @@
 
 
 namespace W{
-	#include "windows.h"
+	#include "PinWindows.h"
 	#include <tlhelp32.h>
 	#include "Winternl.h"
 	#include "winnt.h"

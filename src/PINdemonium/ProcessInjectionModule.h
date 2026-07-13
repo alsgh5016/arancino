@@ -5,7 +5,7 @@
 #include "Heuristics.h"
 #include "Helper.h"
 namespace W{
-	#include "windows.h"
+	#include "PinWindows.h"
 }
 class ProcessInjectionModule
 {
