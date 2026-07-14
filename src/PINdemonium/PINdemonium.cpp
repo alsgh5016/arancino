@@ -102,7 +102,7 @@ void imageLoadCallback(IMG img,void *){
 	ProcInfo *proc_info = ProcInfo::getInstance();
 	FilterHandler *filterHandler = FilterHandler::getInstance();
 	//get the initial entropy of the PE
-	//we have to consder only the main executable and avìvoid the libraries
+	//we have to consder only the main executable and avï¿½void the libraries
 	if(IMG_IsMainExecutable(img)){		
 		ADDRINT startAddr = IMG_LowAddress(img);
 		ADDRINT endAddr = IMG_HighAddress(img);
@@ -148,7 +148,7 @@ void imageLoadCallback(IMG img,void *){
 		proc_info->addLibrary(name,startAddr,endAddr);
 		if(filterHandler->IsNameInFilteredArray(name)){
 			filterHandler->addToFilteredLibrary(name,startAddr,endAddr);
-			MYINFO("Added to the filtered array the module %s\n" , name);
+			MYINFO("Added to the filtered array the module %s\n" , name.c_str());
 		}
 	}
 }

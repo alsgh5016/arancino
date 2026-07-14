@@ -68,7 +68,7 @@ Config::Config(std::string config_path){
 
 	// TO FIX Test filename loaded directly without config file
 	string test_filename = this->base_path + "testEvasion.txt";
-	printf("test_filename is %s\n", test_filename);
+	printf("test_filename is %s\n", test_filename.c_str());
 
 	this->test_file = fopen(test_filename.c_str(),"w");
 	printf("test_file is %08x\n", test_file);
