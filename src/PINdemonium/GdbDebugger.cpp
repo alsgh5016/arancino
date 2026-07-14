@@ -1,5 +1,11 @@
 #include "GdbDebugger.h"
 
+// Windows macros used here (STD_ERROR_HANDLE, STD_OUTPUT_HANDLE = ((DWORD)-12)
+// ...) expand to unqualified DWORD, which cannot be W::-prefixed because the
+// macro text lives in windows.h.  This TU uses no Pin types (it does not include
+// pin.H), so pulling namespace W in at file scope is safe and unambiguous here.
+using namespace W;
+
 #define BUFSIZE 10000
 
 #define GDB_PATH "C:\\MinGW\\bin\\gdb.exe"
