@@ -55,7 +55,7 @@ void GdbDebugger::CreateChildProcess()
 	W::TCHAR szCmdline[]=TEXT(GDB_PATH);
 	W::PROCESS_INFORMATION piProcInfo ={0}; 
 	W::STARTUPINFO siStartInfo;
-	BOOL bSuccess = FALSE; 
+	W::BOOL bSuccess = FALSE; 
 	// Set up members of the W::STARTUPINFO structure. 
 	// This structure specifies the STDIN and STDOUT handles for redirection.
 	ZeroMemory( &siStartInfo, sizeof(W::STARTUPINFO) );
@@ -93,7 +93,7 @@ void GdbDebugger::CreateChildProcess()
 // Stop when there is no more data. 
 void GdbDebugger::WriteToPipe(char* cmd) { 
    W::DWORD dwRead = strlen(cmd), dwWritten; 
-   BOOL bSuccess = FALSE;       
+   W::BOOL bSuccess = FALSE;       
    bSuccess = W::WriteFile(g_hChildStd_IN_Wr, cmd, dwRead, &dwWritten, NULL);
 } 
 
@@ -103,8 +103,8 @@ void GdbDebugger::WriteToPipe(char* cmd) {
 // Stop when there is no more data. 
 void GdbDebugger::ReadFromPipe(void){ 
    W::DWORD dwRead, dwWritten; 
-   CHAR chBuf[BUFSIZE]; 
-   BOOL bSuccess = FALSE;
+   W::CHAR chBuf[BUFSIZE]; 
+   W::BOOL bSuccess = FALSE;
    W::HANDLE hParentStdOut = W::GetStdHandle(STD_OUTPUT_HANDLE);
    W::ReadFile( g_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL); 
 } 
