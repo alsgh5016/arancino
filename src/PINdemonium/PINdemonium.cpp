@@ -12,6 +12,7 @@
 #include "HookSyscalls.h"
 #include "PolymorphicCodeHandlerModule.h"
 #include "PINShield.h"
+#include "ScyllaWrapperInterface.h"
 #include "md5.h"
 namespace W {
 	#include <windows.h>
@@ -277,6 +278,10 @@ int main(int argc, char * argv[]){
 	//init the hooking system
 	HookSyscalls::enumSyscalls();
 	HookSyscalls::initHooks();
+	// Pre-load the Scylla wrapper DLL now, while still single-threaded, so the
+	// heap-dump path never calls LoadLibrary from an analysis callback (which
+	// takes the loader lock and deadlocks under Pin on multi-threaded targets).
+	ScyllaWrapperInterface::getInstance()->loadScyllaLibary();
 	printf("[INFO] Starting instrumented program\n\n");
 	//MYINFO(" knob inizio %d %d %d",Config::getInstance()->getDumpNumber(), Config::getInstance()->getDumpNumber(),Config::getInstance()->WRITEINTERVAL_MAX_NUMBER_JMP);
 	PIN_StartProgram();	

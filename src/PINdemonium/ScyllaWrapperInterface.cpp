@@ -14,6 +14,9 @@ ScyllaWrapperInterface* ScyllaWrapperInterface::getInstance()
 ScyllaWrapperInterface::ScyllaWrapperInterface(void)
 {
 	config = Config::getInstance();
+	this->hScyllaWrapper = 0;
+	this->ScyllaDumpAndFix = 0;
+	this->ScyllaWrapAddSection = 0;
 }
 
 /**Lauch external tool ScyllaDumper to dump the process with PID pid 
@@ -111,12 +114,12 @@ void ScyllaWrapperInterface::addImportFunctionToDumpReport(string reconstructed_
 //load scylla dll and expose some of its functions as public attribute of the class
 //we have to use loadLibrary and GetProcAddress because PIN doesn't support external libraries
 void ScyllaWrapperInterface::loadScyllaLibary(){
-	//init
-	this->hScyllaWrapper = 0;
-	//load library
+	// Load once and keep the wrapper DLL resident. Calling LoadLibrary from an
+	// analysis callback takes the Windows loader lock, which deadlocks under Pin
+	// on multi-threaded targets (observed hanging the heap-dump path). Never
+	// reload; pre-load once from main() before instrumentation starts.
+	if (this->hScyllaWrapper != 0) return;
 	this->hScyllaWrapper = W::LoadLibraryEx((W::LPCSTR)config->getScyllaWrapperPath().c_str(), NULL, NULL);
-	W::HANDLE scyh = W::GetModuleHandle((W::LPCSTR)config->getScyllaWrapperPath().c_str());
-	//MYINFO("Address in which scylla is mapped: %08x\n" , scyh);
 	//get proc address
 	if (this->hScyllaWrapper)
 	{
@@ -126,5 +129,7 @@ void ScyllaWrapperInterface::loadScyllaLibary(){
 }
 
 void ScyllaWrapperInterface::unloadScyllaLibrary(){
-	W::FreeLibrary((W::HINSTANCE)this->hScyllaWrapper);
+	// Intentionally a no-op: keep the wrapper DLL loaded for the process
+	// lifetime. FreeLibrary in an analysis callback also takes the loader lock
+	// and deadlocks under Pin. The DLL is released when the process exits.
 }
