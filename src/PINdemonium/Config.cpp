@@ -179,8 +179,22 @@ FILE* Config::getTestFile()
 void Config::loadJson(string config_path){
 	Json::Value root;   // will contains the root value after parsing.
     Json::Reader reader;
-    std::ifstream config_file(config_path, std::ifstream::binary);
-    bool parsingSuccessful = reader.parse( config_file, root, false );
+    // PinCRT's libc++ std::ifstream does not reliably read files at runtime
+    // (it returned empty here, so the JSON parse failed at 1:1). Read the config
+    // with stdio, which PinCRT supports, into a string and parse that instead.
+    std::string config_content;
+    FILE* config_file = fopen(config_path.c_str(), "rb");
+    if (config_file){
+        fseek(config_file, 0, SEEK_END);
+        long config_size = ftell(config_file);
+        fseek(config_file, 0, SEEK_SET);
+        if (config_size > 0){
+            config_content.resize((size_t)config_size);
+            fread(&config_content[0], 1, (size_t)config_size, config_file);
+        }
+        fclose(config_file);
+    }
+    bool parsingSuccessful = reader.parse( config_content, root, false );
 	if ( !parsingSuccessful ){
 		printf("Error parsing the json config file: %s",reader.getFormattedErrorMessages().c_str());
 		//Can't use LOG since the log path hasn't been loaded yet
