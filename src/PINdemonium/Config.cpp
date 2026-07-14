@@ -193,10 +193,7 @@ void Config::loadJson(string config_path){
             config_content.append(buf, n);
         }
         fclose(config_file);
-    } else {
-        printf("[CONFIG] fopen FAILED for %s\n", config_path.c_str());
     }
-    printf("[CONFIG] read %u bytes\n", (unsigned)config_content.size());
     bool parsingSuccessful = reader.parse( config_content, root, false );
 	if ( !parsingSuccessful ){
 		printf("Error parsing the json config file: %s",reader.getFormattedErrorMessages().c_str());
