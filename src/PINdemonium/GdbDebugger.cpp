@@ -52,7 +52,7 @@ void GdbDebugger::connectRemote(int port){
 void GdbDebugger::CreateChildProcess()
 // Create a child process that uses the previously created pipes for STDIN and STDOUT.
 { 
-	TCHAR szCmdline[]=TEXT(GDB_PATH);
+	W::TCHAR szCmdline[]=TEXT(GDB_PATH);
 	W::PROCESS_INFORMATION piProcInfo ={0}; 
 	W::STARTUPINFO siStartInfo;
 	BOOL bSuccess = FALSE; 
@@ -111,7 +111,7 @@ void GdbDebugger::ReadFromPipe(void){
 
 
 void GdbDebugger::ErrorExit(char * error) {
-    ExitProcess(1);
+    W::ExitProcess(1);
 }
 
 void GdbDebugger::executeCmd(char* cmd){
