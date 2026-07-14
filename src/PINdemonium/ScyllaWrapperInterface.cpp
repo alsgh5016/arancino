@@ -76,12 +76,10 @@ void ScyllaWrapperInterface::addImportFunctionToDumpReport(string reconstructed_
 	std::string imports_content;
 	FILE* myfile = fopen(reconstructed_imports_file.c_str(), "rb");
 	if (myfile){
-		fseek(myfile, 0, SEEK_END);
-		long imports_size = ftell(myfile);
-		fseek(myfile, 0, SEEK_SET);
-		if (imports_size > 0){
-			imports_content.resize((size_t)imports_size);
-			fread(&imports_content[0], 1, (size_t)imports_size, myfile);
+		char buf[4096];
+		size_t n;
+		while ((n = fread(buf, 1, sizeof(buf), myfile)) > 0){
+			imports_content.append(buf, n);
 		}
 		fclose(myfile);
 	}

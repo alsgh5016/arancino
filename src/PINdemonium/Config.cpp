@@ -182,18 +182,21 @@ void Config::loadJson(string config_path){
     // PinCRT's libc++ std::ifstream does not reliably read files at runtime
     // (it returned empty here, so the JSON parse failed at 1:1). Read the config
     // with stdio, which PinCRT supports, into a string and parse that instead.
+    // Read via stdio in a fread loop (do NOT rely on fseek/ftell, which may not
+    // report the size under PinCRT).
     std::string config_content;
     FILE* config_file = fopen(config_path.c_str(), "rb");
     if (config_file){
-        fseek(config_file, 0, SEEK_END);
-        long config_size = ftell(config_file);
-        fseek(config_file, 0, SEEK_SET);
-        if (config_size > 0){
-            config_content.resize((size_t)config_size);
-            fread(&config_content[0], 1, (size_t)config_size, config_file);
+        char buf[4096];
+        size_t n;
+        while ((n = fread(buf, 1, sizeof(buf), config_file)) > 0){
+            config_content.append(buf, n);
         }
         fclose(config_file);
+    } else {
+        printf("[CONFIG] fopen FAILED for %s\n", config_path.c_str());
     }
+    printf("[CONFIG] read %u bytes\n", (unsigned)config_content.size());
     bool parsingSuccessful = reader.parse( config_content, root, false );
 	if ( !parsingSuccessful ){
 		printf("Error parsing the json config file: %s",reader.getFormattedErrorMessages().c_str());
