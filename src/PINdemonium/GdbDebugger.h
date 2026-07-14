@@ -1,8 +1,8 @@
 #pragma once
+namespace W {
 #include <windows.h>
+}
 #include <sstream>
-
-typedef void *HANDLE;
 
 class GdbDebugger
 
@@ -14,10 +14,10 @@ public:
 
 private:
 	static GdbDebugger* instance;
-	HANDLE g_hChildStd_IN_Rd;
-	HANDLE g_hChildStd_IN_Wr;
-	HANDLE g_hChildStd_OUT_Rd;
-	HANDLE g_hChildStd_OUT_Wr;
+	W::HANDLE g_hChildStd_IN_Rd;
+	W::HANDLE g_hChildStd_IN_Wr;
+	W::HANDLE g_hChildStd_OUT_Rd;
+	W::HANDLE g_hChildStd_OUT_Wr;
 	int remote_port;
 	GdbDebugger(void);
 	~GdbDebugger(void);

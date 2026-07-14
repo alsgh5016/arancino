@@ -39,13 +39,12 @@ vector<string> YaraHeuristic::parseYaraOutput(string output){
 	vector<string> matched_rules;
 	istringstream output_stream(output); 
 	for(string line; getline(output_stream,line);){ // iterate through lines
-		try{
-			string matched_string = Helper::split(line,' ').at(0);
+		vector<string> yara_parts = Helper::split(line,' ');
+		if(!yara_parts.empty()){
+			string matched_string = yara_parts[0];
 			MYINFO("Adding matched Yara rule %s",matched_string.c_str());
-			matched_rules.push_back(matched_string); 
+			matched_rules.push_back(matched_string);
 		}
-		catch (const std::out_of_range&){
-		}	
 	}
 	return matched_rules;
 }
@@ -103,13 +102,10 @@ UINT32 YaraHeuristic::run(vector<string> paths_to_analyse){
 	}
 
 	//Saving the information to the report
-	try{
+	{
 		ReportDump& report_dump = Report::getInstance()->getCurrentDump();
 		ReportObject* yara_heur = new ReportYaraRules(result, global_matched_rules);
 		report_dump.addHeuristic(yara_heur);
-	}
-	catch (const std::out_of_range& ){
-		MYERRORE("Problem creating ReportYaraRules report");
 	}	
 
 	

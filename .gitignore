@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Stray upstream diStorm clone (embedded git repo, unused by the build;
+# the project compiles src/PINdemonium/diStorm/src/*.c instead).
+src/PINdemonium/diStorm/distorm/
+
+# Local-only references (not part of the build): the downloaded Pin kit and
+# the REM reference project used to derive the Pin 3.31 Windows.h handling.
+/pin-external-*/
+/REM/

@@ -123,18 +123,18 @@ VOID ProcessInjectionModule::ExecuteHeuristics(string path_to_analyse){
 }
 
 string ProcessInjectionModule::getNameFromPid(W::DWORD pid) {
-    HANDLE hSnapshot = W::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    W::HANDLE hSnapshot = W::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if(hSnapshot) {
         W::PROCESSENTRY32 pe32;
         pe32.dwSize = sizeof(W::PROCESSENTRY32);
-        if(Process32First(hSnapshot, &pe32)) {
+        if(W::Process32First(hSnapshot, &pe32)) {
             do {
 				if(pe32.th32ProcessID == pid){
 					return string(pe32.szExeFile);
 				}
-            } while(Process32Next(hSnapshot, &pe32));
+            } while(W::Process32Next(hSnapshot, &pe32));
          }
-         CloseHandle(hSnapshot);
+         W::CloseHandle(hSnapshot);
     }
 	return "";
 }

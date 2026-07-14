@@ -14,6 +14,9 @@ ScyllaWrapperInterface* ScyllaWrapperInterface::getInstance()
 ScyllaWrapperInterface::ScyllaWrapperInterface(void)
 {
 	config = Config::getInstance();
+	this->hScyllaWrapper = 0;
+	this->ScyllaDumpAndFix = 0;
+	this->ScyllaWrapAddSection = 0;
 }
 
 /**Lauch external tool ScyllaDumper to dump the process with PID pid 
@@ -71,32 +74,39 @@ UINT32 ScyllaWrapperInterface::launchScyllaDumpAndFix(int pid, int curEip, std::
 
 void ScyllaWrapperInterface::addImportFunctionToDumpReport(string reconstructed_imports_file){
 	string line;
-	std::ifstream myfile(reconstructed_imports_file);
+	// PinCRT's libc++ std::ifstream does not read files at runtime; read via
+	// stdio into a string and iterate its lines with an istringstream.
+	std::string imports_content;
+	FILE* myfile = fopen(reconstructed_imports_file.c_str(), "rb");
+	if (myfile){
+		char buf[4096];
+		size_t n;
+		while ((n = fread(buf, 1, sizeof(buf), myfile)) > 0){
+			imports_content.append(buf, n);
+		}
+		fclose(myfile);
+	}
+	std::istringstream imports_stream(imports_content);
 	vector<string> imports;
 	vector<ReportObject *> imports_report;
 	int imports_number=0;
 	//parsing the file to extract modules and functions names and populate json objects
-	while (getline(myfile, line)){
-        try{
-			
-			imports = Helper::split(line,' ');  //the format of the file is "module_name function_name"
-			ReportObject *current_import = new ReportImportedFunction(imports.at(0), imports.at(1));
+	while (getline(imports_stream, line)){
+		imports = Helper::split(line,' ');  //the format of the file is "module_name function_name"
+		if(imports.size() >= 2){
+			ReportObject *current_import = new ReportImportedFunction(imports[0], imports[1]);
 			imports_number++;
 			imports_report.push_back(current_import);
-
-		}catch (const std::out_of_range& ){ //handle possible missing information inside the file
+		}else{ //handle possible missing information inside the file
 			MYERRORE("Problem adding function to the imported function report line: %s",line.c_str());
-		}	
+		}
 	}
 	
 	//Saving the information to the report
-	try{
+	{
 		ReportDump& report_dump = Report::getInstance()->getCurrentDump();
 		report_dump.setImportedFunctions(imports_report);
 		report_dump.setNumberOfImports(imports_number);
-	}
-	catch (const std::out_of_range& ){
-		MYERRORE("Problem creating ReportImportedFunction report");
 	}
 
 }
@@ -104,12 +114,12 @@ void ScyllaWrapperInterface::addImportFunctionToDumpReport(string reconstructed_
 //load scylla dll and expose some of its functions as public attribute of the class
 //we have to use loadLibrary and GetProcAddress because PIN doesn't support external libraries
 void ScyllaWrapperInterface::loadScyllaLibary(){
-	//init
-	this->hScyllaWrapper = 0;
-	//load library
+	// Load once and keep the wrapper DLL resident. Calling LoadLibrary from an
+	// analysis callback takes the Windows loader lock, which deadlocks under Pin
+	// on multi-threaded targets (observed hanging the heap-dump path). Never
+	// reload; pre-load once from main() before instrumentation starts.
+	if (this->hScyllaWrapper != 0) return;
 	this->hScyllaWrapper = W::LoadLibraryEx((W::LPCSTR)config->getScyllaWrapperPath().c_str(), NULL, NULL);
-	W::HANDLE scyh = W::GetModuleHandle((W::LPCSTR)config->getScyllaWrapperPath().c_str());
-	//MYINFO("Address in which scylla is mapped: %08x\n" , scyh);
 	//get proc address
 	if (this->hScyllaWrapper)
 	{
@@ -119,5 +129,7 @@ void ScyllaWrapperInterface::loadScyllaLibary(){
 }
 
 void ScyllaWrapperInterface::unloadScyllaLibrary(){
-	W::FreeLibrary((W::HINSTANCE)this->hScyllaWrapper);
+	// Intentionally a no-op: keep the wrapper DLL loaded for the process
+	// lifetime. FreeLibrary in an analysis callback also takes the loader lock
+	// and deadlocks under Pin. The DLL is released when the process exits.
 }

@@ -241,7 +241,7 @@ void IATReferenceScan::findNormalIatReference( _DInst * instruction )
 
 					getIatEntryAddress(&ref);
 
-					//Scylla::debugLog.log(L"iat entry "PRINTF_DWORD_PTR_FULL,ref.targetAddressInIat);
+					//Scylla::debugLog.log(L"iat entry " PRINTF_DWORD_PTR_FULL,ref.targetAddressInIat);
 
 					iatReferenceList.push_back(ref);
 				}
@@ -262,7 +262,7 @@ void IATReferenceScan::findNormalIatReference( _DInst * instruction )
 					
 					getIatEntryAddress(&ref);
 
-					//Scylla::debugLog.log(L"iat entry "PRINTF_DWORD_PTR_FULL,ref.targetAddressInIat);
+					//Scylla::debugLog.log(L"iat entry " PRINTF_DWORD_PTR_FULL,ref.targetAddressInIat);
 
 					iatReferenceList.push_back(ref);
 				}

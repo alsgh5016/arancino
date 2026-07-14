@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pin 3.31 (IA-32 / Windows / CLANG kit) wiring for the PINdemonium pintool.
+
+  Source of truth: the kit's own example project
+    C:\pin\source\tools\MyPinTool\MyPinTool-clang.vcxproj  (Debug|Win32)
+  This kit is the clang-windows variant and is built with <PlatformToolset>
+  ClangCL</PlatformToolset> (set in MyPinTool.vcxproj's Configuration groups).
+  Its PinCRT C++ headers (extras\cxx\include, based on libc++ / bionic) use the
+  GCC-only #include_next, so cl.exe/v143 cannot compile them — ClangCL can.
+
+  Imported LAST by MyPinTool.vcxproj so these values override the stale Pin 2.14
+  settings still present in the .vcxproj. Runtime layout is the hardcoded C:\pin.
+
+  Note: /FIinclude/msvc_compat.h force-includes extras\crt\include\msvc_compat.h,
+  which is why C:\pin\extras\crt must stay on the include path.
+-->
+<Project>
+  <PropertyGroup Label="PinRoot">
+    <PIN_ROOT>C:\pin</PIN_ROOT>
+    <!-- Directory that holds the real SDK Windows.h (the ...\um folder).
+         Hardcoded to the installed Windows 10 SDK version, like REM does
+         ($(WindowsSDKVersion) evaluates empty this early, dropping the version
+         and breaking the path). If your SDK version differs, change it here or
+         set WIN_INCLUDE in the environment / project properties. -->
+    <WIN_INCLUDE Condition="'$(WIN_INCLUDE)'==''">C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um</WIN_INCLUDE>
+  </PropertyGroup>
+
+  <!-- IA-32 (Win32) only. The pintool targets 32-bit PE files exclusively. -->
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+    <ClCompile>
+      <!-- /Zc:threadSafeInit- : function-local statics with non-trivial ctors
+           (e.g. GetScratchReg's `static std::vector<REG> regs`) otherwise emit
+           MSVC magic-static guards (_Init_thread_*, _tls_index/_tls_array) that
+           PinCRT does not provide. Pin serializes instrumentation, so the
+           non-thread-safe init is fine. -->
+      <AdditionalOptions>/GR- /GS- /EHs- /EHa- /FP:strict /Oi- /Zc:threadSafeInit- /FIinclude/msvc_compat.h /FI"$(ProjectDir)std_compat.h" /D_WINDOWS_H_PATH_="$(WIN_INCLUDE)" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(SolutionDir)Scylla\Scylla;$(PIN_ROOT)\source\include\pin;$(PIN_ROOT)\source\include\pin\gen;$(PIN_ROOT)\source\tools\InstLib;$(PIN_ROOT)\extras\xed-ia32\include\xed;$(PIN_ROOT)\extras\components\include;$(PIN_ROOT)\extras\cxx\include;$(PIN_ROOT)\extras;$(PIN_ROOT)\extras\crt\include;$(PIN_ROOT)\extras\crt;$(PIN_ROOT)\extras\crt\include\arch-x86;$(PIN_ROOT)\extras\crt\include\kernel\uapi;$(PIN_ROOT)\extras\crt\include\kernel\uapi\asm-x86;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- Exactly REM's define set (+ BIGARRAY_MULTIPLIER/WIN32 that PINdemonium
+           relies on).  No %() so the stale Pin 2.14 defines in the .vcxproj are
+           fully discarded and the pintool matches REM's proven configuration. -->
+      <!-- Exactly REM's define set (+ BIGARRAY_MULTIPLIER/WIN32 that PINdemonium
+           relies on).  The corecrt.h typedef clash is fixed at the source by
+           not pulling MSVC's <direct.h> (see std_compat.h), so no guard hacks. -->
+      <PreprocessorDefinitions>TARGET_IA32;HOST_IA32;TARGET_WINDOWS;PIN_CRT=1;__i386__;_LIBCPP_DISABLE_AVAILABILITY;_LIBCPP_NO_VCRUNTIME;__BIONIC__;BIGARRAY_MULTIPLIER=1;WIN32</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <ExceptionHandling></ExceptionHandling>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DisableSpecificWarnings>4530;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <!-- Exact library set from the kit's MyPinTool-clang.vcxproj (ia32) plus
+           our ScyllaDLLx86.lib. No %() so the stale 2.14 libs (libcpmt/libcmt/
+           pinvm) in the .vcxproj are fully discarded. -->
+      <AdditionalDependencies>pin.lib;xed.lib;pinipc.lib;c++.lib;pincrt.lib;kernel32.lib;crtbeginS.obj;ScyllaDLLx86.lib</AdditionalDependencies>
+      <!-- Scylla emits ScyllaDLLx86.lib into ScyllaDllDebug/ScyllaDllRelease by
+           config; match the pintool's config. Both listed so a mismatched build
+           still links (the .lib is ABI-identical for our C export interface). -->
+      <AdditionalLibraryDirectories>$(PIN_ROOT)\ia32\lib;$(PIN_ROOT)\ia32\lib-ext;$(PIN_ROOT)\extras\xed-ia32\lib;$(PIN_ROOT)\ia32\runtime\pincrt;C:\pin\PINdemoniumDependencies\Scylla\ScyllaDll$(Configuration);C:\pin\PINdemoniumDependencies\Scylla\ScyllaDllRelease;C:\pin\PINdemoniumDependencies\Scylla\ScyllaDllDebug</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <AdditionalOptions>/export:main %(AdditionalOptions)</AdditionalOptions>
+      <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
+      <BaseAddress>0x55000000</BaseAddress>
+      <SubSystem>NotSet</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <OptimizeReferences>false</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AllowIsolation>true</AllowIsolation>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- Runtime library per config, matching the kit example (/MDd, /MD).
+       Kept out of the shared Win32 group above because it differs by config.
+       PinCRT + IgnoreAllDefaultLibraries means the CRT itself is not linked;
+       this only drives the _DLL/_DEBUG macros libc++ keys off. -->
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+</Project>

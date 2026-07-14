@@ -14,12 +14,10 @@ UINT32 EntropyHeuristic::run(){
 	if( difference > threshold){
 		result = true;
 	} 
-	try{
+	{
 		ReportDump& report_dump = Report::getInstance()->getCurrentDump();
 		ReportObject* entropy_heur = new ReportEntropy(result,entropy_value,difference);
 		report_dump.addHeuristic(entropy_heur);
-	}catch (const std::out_of_range&){
-			MYERRORE("Problem creating ReportEntropy report");
 	}
 
 	if(result == true){

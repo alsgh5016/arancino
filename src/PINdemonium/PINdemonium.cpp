@@ -12,6 +12,7 @@
 #include "HookSyscalls.h"
 #include "PolymorphicCodeHandlerModule.h"
 #include "PINShield.h"
+#include "ScyllaWrapperInterface.h"
 #include "md5.h"
 namespace W {
 	#include <windows.h>
@@ -102,7 +103,7 @@ void imageLoadCallback(IMG img,void *){
 	ProcInfo *proc_info = ProcInfo::getInstance();
 	FilterHandler *filterHandler = FilterHandler::getInstance();
 	//get the initial entropy of the PE
-	//we have to consder only the main executable and avìvoid the libraries
+	//we have to consder only the main executable and avï¿½void the libraries
 	if(IMG_IsMainExecutable(img)){		
 		ADDRINT startAddr = IMG_LowAddress(img);
 		ADDRINT endAddr = IMG_HighAddress(img);
@@ -148,7 +149,7 @@ void imageLoadCallback(IMG img,void *){
 		proc_info->addLibrary(name,startAddr,endAddr);
 		if(filterHandler->IsNameInFilteredArray(name)){
 			filterHandler->addToFilteredLibrary(name,startAddr,endAddr);
-			MYINFO("Added to the filtered array the module %s\n" , name);
+			MYINFO("Added to the filtered array the module %s\n" , name.c_str());
 		}
 	}
 }
@@ -277,6 +278,10 @@ int main(int argc, char * argv[]){
 	//init the hooking system
 	HookSyscalls::enumSyscalls();
 	HookSyscalls::initHooks();
+	// Pre-load the Scylla wrapper DLL now, while still single-threaded, so the
+	// heap-dump path never calls LoadLibrary from an analysis callback (which
+	// takes the loader lock and deadlocks under Pin on multi-threaded targets).
+	ScyllaWrapperInterface::getInstance()->loadScyllaLibary();
 	printf("[INFO] Starting instrumented program\n\n");
 	//MYINFO(" knob inizio %d %d %d",Config::getInstance()->getDumpNumber(), Config::getInstance()->getDumpNumber(),Config::getInstance()->WRITEINTERVAL_MAX_NUMBER_JMP);
 	PIN_StartProgram();	

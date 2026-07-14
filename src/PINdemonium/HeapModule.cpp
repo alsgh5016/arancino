@@ -40,7 +40,7 @@ UINT32 HeapModule::checkHeapWxorX(WriteInterval* item, ADDRINT curEip, int dumpA
 			MYINFO("[CRITICAL ERROR]Dump file not found\n");
 			return OEPFINDER_HEURISTIC_FAIL;
 		}
-		// and convert it into the WCHAR representation 
+		// and convert it into the W::WCHAR representation 
 		std::wstring widestr = std::wstring(dump_path.begin(), dump_path.end());
 		const wchar_t* widecstr = widestr.c_str();
 		// calculate where the program jump in the heap ( i.e. 0 perfectly at the begin of the heapzone ) 
@@ -70,7 +70,9 @@ VOID HeapModule::saveHeapZones(std::map<std::string,HeapZone> hzs, std::map<std:
 	Config *config = Config::getInstance();
 
 	std::string heap_map_path = heaps_dir + "\\" +  "heap_map.txt";
-	std::ofstream heap_map_file(heap_map_path);
+	// PinCRT file streams do not work; create/truncate via stdio (logHZ appends).
+	FILE* heap_map_init = fopen(heap_map_path.c_str(), "w");
+	if (heap_map_init) fclose(heap_map_init);
 
 	for (std::map<std::string,HeapZone>::iterator it=hzs.begin(); it!=hzs.end(); ++it){	
 		HeapZone hz = it->second;
@@ -106,10 +108,11 @@ std::string HeapModule::dumpHZ(HeapZone hz, char * data, std::string hz_md5){
 
 	// dump of the heap inside this folder 
 	std::string heap_dir = Config::getInstance()->getHeapDir();
-	std::ofstream heap_file(heap_bin_path, std::ios::binary);
-
-	heap_file.write((char *) data, hz.size);
-	heap_file.close();
+	FILE* heap_file = fopen(heap_bin_path.c_str(), "wb");
+	if (heap_file){
+		fwrite(data, 1, hz.size, heap_file);
+		fclose(heap_file);
+	}
 
 	return heap_bin_path;
 }
@@ -140,9 +143,9 @@ void HeapModule::logHZ(std::string heap_link_name, HeapZone hz, std::string hz_m
 
 	//printf("Inside logHZ - heap_map_path: %s\n", heap_map_path.c_str());
 
-	std::ofstream heap_map_file(heap_map_path,ios::app);
-
-	heap_map_file << heap_link_name << " " << std::hex << hz.begin << " " << std::to_string((_ULonglong)hz.size) << " " << "\n" ;
-
-	heap_map_file.close();
+	FILE* heap_map_file = fopen(heap_map_path.c_str(), "a");
+	if (heap_map_file){
+		fprintf(heap_map_file, "%s %x %s \n", heap_link_name.c_str(), (unsigned int)hz.begin, std::to_string((_ULonglong)hz.size).c_str());
+		fclose(heap_map_file);
+	}
 }

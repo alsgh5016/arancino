@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Global build settings for the Pin 3.31 / Visual Studio 2022 (v143) migration.
+
+  MSBuild auto-imports this file for EVERY project under src/, so the individual
+  .vcxproj files do not each need to be edited to change toolset / SDK / standard.
+
+  Decisions (confirmed with the user):
+    * Platform toolset : v143 (VS2022).  Fallback v142 (VS2019) if v143 fights
+      the Pin 3.31 MSVC kit — change the single line below to switch everyone.
+    * C++ standard     : c++14 (keeps legacy constructs like std::auto_ptr in
+      jsoncpp compiling with minimal rewrites; C++17 removes them).
+    * CRT              : silence the C4996 "unsafe" deprecations globally instead
+      of rewriting ~200 strcpy/sprintf/strcat/fopen call sites.  Correctness is
+      unchanged; only the warning-as-error is suppressed.
+
+  This file intentionally does NOT set anything Pin-specific — that lives in
+  Pin.props and is imported only by the pintool (MyPinTool.vcxproj).
+-->
+<Project>
+  <PropertyGroup Label="MigrationGlobals">
+    <PlatformToolset>v143</PlatformToolset>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <!-- Applies to the NATIVE MSVC/v143 projects only (Scylla, diStorm, tinyxml,
+       ScyllaWrapper, ScyllaDumper).  The pintool (MyPinTool.vcxproj) is built
+       with ClangCL against PinCRT and must NOT inherit these MSVC-CRT settings
+       — it is configured entirely by Pin.props, mirroring REM's clean setup. -->
+  <ItemDefinitionGroup Condition="'$(MSBuildProjectName)' != 'MyPinTool'">
+    <ClCompile>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS;_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

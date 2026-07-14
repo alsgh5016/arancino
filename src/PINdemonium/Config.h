@@ -4,7 +4,6 @@
 #include "WriteInterval.h"
 #include "ProcInfo.h"
 #include <ctime>
-#include <direct.h>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
