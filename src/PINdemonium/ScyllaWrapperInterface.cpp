@@ -49,10 +49,8 @@ UINT32 ScyllaWrapperInterface::launchScyllaDumpAndFix(int pid, int curEip, std::
 		MYERRORE("(INITFUNCTIONCALL)Can't launch Scylla");
 		return -5;
 	}
-	// Wait for ScyllaDumper.exe to finish BEFORE reading its exit code, otherwise
-	// GetExitCodeProcess always returns STILL_ACTIVE (259).
-	W::WaitForSingleObject(pi.hProcess,INFINITE);
 	W::GetExitCodeProcess(pi.hProcess, &exitCode);
+	W::WaitForSingleObject(pi.hProcess,INFINITE);
 	W::CloseHandle(pi.hProcess);
 	W::CloseHandle(pi.hThread);
 
