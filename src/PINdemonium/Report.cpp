@@ -67,10 +67,12 @@ void Report::closeReport(){
 //------------- Helpers ----------------
 //create a new file where writes the current report
 void Report::writeJsonToReport(Json::Value report ){
-	ofstream report_file;
-	report_file.open(report_path,std::ofstream::out);
+	// PinCRT's libc++ file streams do not work at runtime; write via stdio.
 	Json::FastWriter fastWriter;
-	report_file << fastWriter.write(report);
-	report_file.flush();
-	report_file.close();
+	std::string report_str = fastWriter.write(report);
+	FILE* report_file = fopen(report_path.c_str(), "w");
+	if (report_file){
+		fwrite(report_str.c_str(), 1, report_str.size(), report_file);
+		fclose(report_file);
+	}
 }

@@ -71,12 +71,26 @@ UINT32 ScyllaWrapperInterface::launchScyllaDumpAndFix(int pid, int curEip, std::
 
 void ScyllaWrapperInterface::addImportFunctionToDumpReport(string reconstructed_imports_file){
 	string line;
-	std::ifstream myfile(reconstructed_imports_file);
+	// PinCRT's libc++ std::ifstream does not read files at runtime; read via
+	// stdio into a string and iterate its lines with an istringstream.
+	std::string imports_content;
+	FILE* myfile = fopen(reconstructed_imports_file.c_str(), "rb");
+	if (myfile){
+		fseek(myfile, 0, SEEK_END);
+		long imports_size = ftell(myfile);
+		fseek(myfile, 0, SEEK_SET);
+		if (imports_size > 0){
+			imports_content.resize((size_t)imports_size);
+			fread(&imports_content[0], 1, (size_t)imports_size, myfile);
+		}
+		fclose(myfile);
+	}
+	std::istringstream imports_stream(imports_content);
 	vector<string> imports;
 	vector<ReportObject *> imports_report;
 	int imports_number=0;
 	//parsing the file to extract modules and functions names and populate json objects
-	while (getline(myfile, line)){
+	while (getline(imports_stream, line)){
 		imports = Helper::split(line,' ');  //the format of the file is "module_name function_name"
 		if(imports.size() >= 2){
 			ReportObject *current_import = new ReportImportedFunction(imports[0], imports[1]);
