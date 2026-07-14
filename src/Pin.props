@@ -50,7 +50,10 @@
            our ScyllaDLLx86.lib. No %() so the stale 2.14 libs (libcpmt/libcmt/
            pinvm) in the .vcxproj are fully discarded. -->
       <AdditionalDependencies>pin.lib;xed.lib;pinipc.lib;c++.lib;pincrt.lib;kernel32.lib;crtbeginS.obj;ScyllaDLLx86.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(PIN_ROOT)\ia32\lib;$(PIN_ROOT)\ia32\lib-ext;$(PIN_ROOT)\extras\xed-ia32\lib;$(PIN_ROOT)\ia32\runtime\pincrt;C:\pin\PINdemoniumDependencies\Scylla\ScyllaDllRelease</AdditionalLibraryDirectories>
+      <!-- Scylla emits ScyllaDLLx86.lib into ScyllaDllDebug/ScyllaDllRelease by
+           config; match the pintool's config. Both listed so a mismatched build
+           still links (the .lib is ABI-identical for our C export interface). -->
+      <AdditionalLibraryDirectories>$(PIN_ROOT)\ia32\lib;$(PIN_ROOT)\ia32\lib-ext;$(PIN_ROOT)\extras\xed-ia32\lib;$(PIN_ROOT)\ia32\runtime\pincrt;C:\pin\PINdemoniumDependencies\Scylla\ScyllaDll$(Configuration);C:\pin\PINdemoniumDependencies\Scylla\ScyllaDllRelease;C:\pin\PINdemoniumDependencies\Scylla\ScyllaDllDebug</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <AdditionalOptions>/export:main %(AdditionalOptions)</AdditionalOptions>
       <EntryPointSymbol>Ptrace_DllMainCRTStartup@12</EntryPointSymbol>
